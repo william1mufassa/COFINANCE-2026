@@ -10,10 +10,12 @@ urlpatterns = [
     # API endpoints
     path('api/auth/', include('accounts.urls')),
     path('api/credits/', include('credits.urls')),
+    path('api/repayments/', include('credits.urls_repayments')),
     path('api/insurance/', include('insurance.urls')),
     path('api/dashboard/', include('dashboard.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/chat/', include('chat.urls')),
+    path('api/admin/chat/', include('chat.urls_admin')),
     
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

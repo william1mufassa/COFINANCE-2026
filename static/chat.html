@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COFINANCE CI - Support Client en Temps Réel</title>
+    <!-- Modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --container-bg: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --glass-blur: blur(12px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 40%);
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 750px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            backdrop-filter: var(--glass-blur);
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Auth Section --- */
+        .auth-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: var(--glass-blur);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #a78bfa 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-logo p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-switch span {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* --- Chat Panels --- */
+        .sidebar {
+            width: 320px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+        }
+
+        .user-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .user-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .conv-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .conv-item {
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .conv-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--border-color);
+        }
+
+        .conv-item.active {
+            background: var(--primary-glow);
+            border-color: var(--primary);
+        }
+
+        .conv-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .conv-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .conv-item-status {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-ouvert {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-attente {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .status-ferme {
+            background: rgba(156, 163, 175, 0.15);
+            color: var(--text-muted);
+        }
+
+        .conv-item-preview {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- Chat window --- */
+        .chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.005);
+        }
+
+        .chat-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-info h2 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chat-header-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message-bubble {
+            max-width: 65%;
+            padding: 14px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-bubble.incoming {
+            background: rgba(255, 255, 255, 0.04);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .message-bubble.outgoing {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .message-bubble.outgoing .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .chat-input-area {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            position: relative;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .send-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 0 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .typing-indicator {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 3px;
+        }
+
+        .typing-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .placeholder-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            gap: 12px;
+        }
+
+        .placeholder-screen svg {
+            width: 64px;
+            height: 64px;
+            stroke: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .close-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Auth View -->
+        <div id="authView" class="auth-container">
+            <div class="auth-card">
+                <div class="brand-logo">
+                    <h1>COFINANCE CI</h1>
+                    <p>Support Chat Temps Réel</p>
+                </div>
+                
+                <form id="authForm">
+                    <div class="input-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" id="username" required placeholder="Ex: aya_commerçante">
+                    </div>
+                    
+                    <div id="emailGroup" class="input-group" style="display: none;">
+                        <label for="email">Adresse Email</label>
+                        <input type="email" id="email" placeholder="Ex: aya@gmail.com">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" id="password" required placeholder="••••••••">
+                    </div>
+                    
+                    <div id="roleGroup" class="input-group" style="display: none;">
+                        <label for="role">Rôle</label>
+                        <select id="role" style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 16px; color: var(--text-main); font-size: 15px; outline: none;">
+                            <option value="CLIENT" style="background-color: #0b0f19;">Client</option>
+                            <option value="AGENT" style="background-color: #0b0f19;">Agent de terrain</option>
+                            <option value="ADMIN" style="background-color: #0b0f19;">Administrateur</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitBtn">Se connecter</button>
+                </form>
+                
+                <div class="auth-switch" id="authSwitch">
+                    Pas encore de compte ? <span onclick="toggleAuthMode()">Créer un compte</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat App View (Hidden by default) -->
+        <div id="appView" style="display: none; width: 100%; height: 100%;" class="app-container">
+            <!-- Conversations Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="user-profile">
+                        <div class="avatar" id="userAvatar">C</div>
+                        <div class="user-info">
+                            <h3 id="userNameDisplay">Nom d'utilisateur</h3>
+                            <p id="userRoleDisplay">Client</p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="newChatBtn" onclick="createNewChat()" style="padding: 10px; font-size: 13px;">
+                        + Nouveau ticket support
+                    </button>
+                </div>
+                
+                <div class="conv-list" id="convList">
+                    <!-- Conversations list generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Active Chat Window -->
+            <div class="chat-window" id="chatWindow">
+                <!-- Shown when no conversation selected -->
+                <div id="chatPlaceholder" class="placeholder-screen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <p>Sélectionnez une discussion ou commencez un nouveau ticket.</p>
+                </div>
+
+                <!-- Chat content (Hidden by default) -->
+                <div id="chatContent" style="display: none; flex: 1; flex-direction: column;">
+                    <div class="chat-header">
+                        <div class="chat-header-info">
+                            <h2 id="activeChatTitle">Discussion #1</h2>
+                            <p id="activeChatAgent">Agent assigné : en attente...</p>
+                        </div>
+                        <button class="close-btn" id="closeTicketBtn" onclick="closeActiveTicket()">
+                            Fermer le ticket
+                        </button>
+                    </div>
+
+                    <div class="messages-container" id="messagesContainer">
+                        <!-- Message bubbles generated dynamically -->
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-row">
+                            <input type="text" class="chat-input" id="messageInput" placeholder="Saisissez votre message..." onkeydown="handleInputKeydown()">
+                            <button class="send-btn" onclick="sendMessage()">Envoyer</button>
+                        </div>
+                        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                            <span id="typingText">L'agent écrit...</span>
+                            <div class="typing-dots">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let token = localStorage.getItem('access_token');
+        let refresh = localStorage.getItem('refresh_token');
+        let isLoginMode = true;
+        let currentUser = null;
+        let activeConvId = null;
+        let ws = null;
+        let typingTimeout = null;
+        let isTyping = false;
+
+        // Start App
+        if (token) {
+            loadUserProfile();
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('emailGroup').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('roleGroup').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('submitBtn').innerText = isLoginMode ? 'Se connecter' : 'Créer un compte';
+            document.getElementById('authSwitch').innerHTML = isLoginMode 
+                ? 'Pas encore de compte ? <span onclick="toggleAuthMode()">Créer un compte</span>'
+                : 'Déjà inscrit ? <span onclick="toggleAuthMode()">Se connecter</span>';
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (isLoginMode) {
+                // Login
+                try {
+                    const response = await fetch(`${API_BASE}/api/auth/login/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        localStorage.setItem('access_token', data.access);
+                        localStorage.setItem('refresh_token', data.refresh);
+                        token = data.access;
+                        loadUserProfile();
+                    } else {
+                        alert(data.detail || "Échec de la connexion.");
+                    }
+                } catch (err) {
+                    alert("Erreur de connexion au serveur.");
+                }
+            } else {
+                // Register
+                const email = document.getElementById('email').value;
+                const role = document.getElementById('role').value;
+                try {
+                    const response = await fetch(`${API_BASE}/api/auth/register/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, email, role })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        alert("Compte créé avec succès ! Connectez-vous.");
+                        toggleAuthMode();
+                    } else {
+                        alert(JSON.stringify(data));
+                    }
+                } catch (err) {
+                    alert("Erreur de création de compte.");
+                }
+            }
+        });
+
+        async function loadUserProfile() {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/profile/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.status === 401) {
+                    // Try token refresh
+                    await tryTokenRefresh();
+                    return;
+                }
+                const data = await response.json();
+                currentUser = data;
+                
+                document.getElementById('authView').style.display = 'none';
+                document.getElementById('appView').style.display = 'flex';
+                
+                document.getElementById('userNameDisplay').innerText = currentUser.username;
+                document.getElementById('userRoleDisplay').innerText = currentUser.role;
+                document.getElementById('userAvatar').innerText = currentUser.username[0].toUpperCase();
+
+                // Show/hide New Ticket button based on role
+                document.getElementById('newChatBtn').style.display = currentUser.role === 'CLIENT' ? 'block' : 'none';
+
+                loadConversations();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function tryTokenRefresh() {
+            const refreshToken = localStorage.getItem('refresh_token');
+            if (!refreshToken) {
+                logout();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/token/refresh/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: refreshToken })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access);
+                    token = data.access;
+                    loadUserProfile();
+                } else {
+                    logout();
+                }
+            } catch (err) {
+                logout();
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            token = null;
+            document.getElementById('appView').style.display = 'none';
+            document.getElementById('authView').style.display = 'flex';
+        }
+
+        async function loadConversations() {
+            try {
+                const response = await fetch(`${API_BASE}/api/chat/conversations/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                const listContainer = document.getElementById('convList');
+                listContainer.innerHTML = '';
+
+                data.forEach(conv => {
+                    const item = document.createElement('div');
+                    item.className = `conv-item ${activeConvId === conv.id ? 'active' : ''}`;
+                    item.onclick = () => selectConversation(conv.id, conv);
+                    
+                    const agentName = conv.agent ? conv.agent.username : 'En attente...';
+                    const clientName = conv.client ? conv.client.username : '';
+                    const displayTitle = currentUser.role === 'CLIENT' ? `Sujet: ${conv.subject || 'Général'}` : `Client: ${clientName}`;
+
+                    item.innerHTML = `
+                        <div class="conv-item-header">
+                            <span class="conv-item-title">${displayTitle}</span>
+                            <span class="conv-item-status status-${conv.status.toLowerCase()}">${conv.status}</span>
+                        </div>
+                        <div class="conv-item-preview">
+                            ${currentUser.role === 'CLIENT' ? 'Agent : ' + agentName : 'Sujet : ' + (conv.subject || 'Sans sujet')}
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function createNewChat() {
+            const subject = prompt("Sujet de votre demande de support :");
+            if (!subject) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/chat/conversations/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ subject })
+                });
+                if (response.ok) {
+                    loadConversations();
+                } else {
+                    alert("Erreur lors de la création du ticket.");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function selectConversation(convId, convDetails) {
+            activeConvId = convId;
+            document.getElementById('chatPlaceholder').style.display = 'none';
+            document.getElementById('chatContent').style.display = 'flex';
+
+            const agentName = convDetails.agent ? convDetails.agent.username : 'En attente d\'un agent...';
+            document.getElementById('activeChatTitle').innerText = convDetails.subject || 'Support Ticket';
+            document.getElementById('activeChatAgent').innerText = `Client : ${convDetails.client.username} | Agent : ${agentName}`;
+
+            // Adjust close button visibility
+            const closeBtn = document.getElementById('closeTicketBtn');
+            if (convDetails.status === 'FERMÉE') {
+                closeBtn.style.display = 'none';
+            } else {
+                closeBtn.style.display = 'block';
+            }
+
+            // Load Message History
+            try {
+                const response = await fetch(`${API_BASE}/api/chat/conversations/${convId}/messages/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const messages = await response.json();
+                
+                const container = document.getElementById('messagesContainer');
+                container.innerHTML = '';
+                messages.forEach(msg => {
+                    appendMessageToDOM(msg);
+                });
+                scrollToBottom();
+            } catch (err) {
+                console.error(err);
+            }
+
+            // Open WebSocket Connection
+            setupWebSocket(convId);
+            
+            // Re-render conversation items to show active state
+            loadConversations();
+        }
+
+        function setupWebSocket(convId) {
+            if (ws) {
+                ws.close();
+            }
+
+            const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            ws = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/${convId}/?token=${token}`);
+
+            ws.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                
+                if (data.type === 'message') {
+                    appendMessageToDOM(data);
+                    scrollToBottom();
+                    // Clear typing indicator for this sender
+                    document.getElementById('typingIndicator').style.display = 'none';
+                } else if (data.type === 'typing') {
+                    if (data.sender_id !== currentUser.id) {
+                        const indicator = document.getElementById('typingIndicator');
+                        document.getElementById('typingText').innerText = `${data.sender_username} écrit...`;
+                        indicator.style.display = 'flex';
+                    }
+                } else if (data.type === 'stop_typing') {
+                    if (data.sender_id !== currentUser.id) {
+                        document.getElementById('typingIndicator').style.display = 'none';
+                    }
+                }
+            };
+
+            ws.onclose = function(e) {
+                console.log('WebSocket closed.');
+            };
+        }
+
+        function appendMessageToDOM(msg) {
+            const container = document.getElementById('messagesContainer');
+            const bubble = document.createElement('div');
+            const isOutgoing = msg.sender_id === currentUser.id;
+            
+            bubble.className = `message-bubble ${isOutgoing ? 'outgoing' : 'incoming'}`;
+            
+            const senderLabel = isOutgoing ? '' : `<div style="font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 4px;">${msg.sender_username} (${msg.sender_role})</div>`;
+            
+            const timeFormatted = new Date(msg.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            bubble.innerHTML = `
+                ${senderLabel}
+                <div>${msg.content}</div>
+                <div class="message-time">${timeFormatted}</div>
+            `;
+            container.appendChild(bubble);
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            if (!content || !ws) return;
+
+            // Send message
+            ws.send(JSON.stringify({
+                'type': 'message',
+                'content': content
+            }));
+            
+            // Stop typing status
+            sendTypingStatus(false);
+            
+            input.value = '';
+        }
+
+        function handleInputKeydown() {
+            if (event.key === 'Enter') {
+                sendMessage();
+            } else {
+                sendTypingStatus(true);
+            }
+        }
+
+        function sendTypingStatus(typing) {
+            if (!ws) return;
+            
+            if (typing) {
+                if (!isTyping) {
+                    isTyping = true;
+                    ws.send(JSON.stringify({ 'type': 'typing' }));
+                }
+                
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    sendTypingStatus(false);
+                }, 3000); // Stop typing after 3s of inactivity
+            } else {
+                if (isTyping) {
+                    isTyping = false;
+                    ws.send(JSON.stringify({ 'type': 'stop_typing' }));
+                }
+            }
+        }
+
+        async function closeActiveTicket() {
+            if (!activeConvId) return;
+            if (!confirm("Voulez-vous vraiment fermer ce ticket de support ?")) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/chat/conversations/${activeConvId}/close/`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    selectConversation(activeConvId, data);
+                    loadConversations();
+                } else {
+                    alert("Erreur lors de la fermeture de la conversation.");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('messagesContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+</body>
+</html>

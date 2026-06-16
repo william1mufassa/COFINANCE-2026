@@ -1,0 +1,1697 @@
+openapi: 3.0.3
+info:
+  title: API COFINANCE CI
+  version: 1.0.0
+  description: Documentation de la plateforme de gestion de microcrédits et assurances
+    mobiles COFINANCE CI.
+paths:
+  /api/admin/chat/conversations/:
+    get:
+      operationId: api_admin_chat_conversations_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+          description: ''
+  /api/admin/chat/conversations/{id}/assign/:
+    put:
+      operationId: api_admin_chat_conversations_assign_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationAssign'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConversationAssign'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConversationAssign'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationAssign'
+          description: ''
+    patch:
+      operationId: api_admin_chat_conversations_assign_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConversationAssign'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConversationAssign'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConversationAssign'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationAssign'
+          description: ''
+  /api/auth/admin/users/:
+    get:
+      operationId: api_auth_admin_users_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/auth/admin/users/{id}/:
+    get:
+      operationId: api_auth_admin_users_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: api_auth_admin_users_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: api_auth_admin_users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    delete:
+      operationId: api_auth_admin_users_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/auth/login/:
+    post:
+      operationId: api_auth_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenObtainPair'
+          description: ''
+  /api/auth/profile/:
+    get:
+      operationId: api_auth_profile_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: api_auth_profile_update
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: api_auth_profile_partial_update
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/auth/register/:
+    post:
+      operationId: api_auth_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistration'
+          description: ''
+  /api/auth/token/refresh/:
+    post:
+      operationId: api_auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/chat/conversations/:
+    get:
+      operationId: api_chat_conversations_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+          description: ''
+    post:
+      operationId: api_chat_conversations_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationCreate'
+          description: ''
+  /api/chat/conversations/{conversation_id}/messages/:
+    get:
+      operationId: api_chat_conversations_messages_list
+      parameters:
+      - in: path
+        name: conversation_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+          description: ''
+  /api/chat/conversations/{id}/:
+    get:
+      operationId: api_chat_conversations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+          description: ''
+  /api/chat/conversations/{id}/close/:
+    patch:
+      operationId: api_chat_conversations_close_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/credits/:
+    get:
+      operationId: api_credits_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditRequest'
+          description: ''
+    post:
+      operationId: api_credits_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreditRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreditRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditRequest'
+          description: ''
+  /api/credits/{credit_id}/documents/:
+    post:
+      operationId: api_credits_documents_create
+      parameters:
+      - in: path
+        name: credit_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditDocument'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreditDocument'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreditDocument'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditDocument'
+          description: ''
+  /api/credits/{credit_id}/schedule/:
+    get:
+      operationId: api_credits_schedule_list
+      parameters:
+      - in: path
+        name: credit_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepaymentSchedule'
+          description: ''
+  /api/credits/{id}/:
+    get:
+      operationId: api_credits_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditRequest'
+          description: ''
+  /api/credits/{id}/status/:
+    put:
+      operationId: api_credits_status_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditStatusUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreditStatusUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreditStatusUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditStatusUpdate'
+          description: ''
+    patch:
+      operationId: api_credits_status_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreditStatusUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreditStatusUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreditStatusUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditStatusUpdate'
+          description: ''
+  /api/credits/admin/list/:
+    get:
+      operationId: api_credits_admin_list_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditRequest'
+          description: ''
+  /api/dashboard/summary/:
+    get:
+      operationId: api_dashboard_summary_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/insurance/products/:
+    get:
+      operationId: api_insurance_products_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InsuranceProduct'
+          description: ''
+    post:
+      operationId: api_insurance_products_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsuranceProduct'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InsuranceProduct'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InsuranceProduct'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProduct'
+          description: ''
+  /api/insurance/products/{id}/:
+    get:
+      operationId: api_insurance_products_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProduct'
+          description: ''
+  /api/insurance/products/create/:
+    post:
+      operationId: api_insurance_products_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsuranceProduct'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InsuranceProduct'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InsuranceProduct'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProduct'
+          description: ''
+  /api/insurance/subscriptions/:
+    get:
+      operationId: api_insurance_subscriptions_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InsuranceSubscription'
+          description: ''
+    post:
+      operationId: api_insurance_subscriptions_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsuranceSubscription'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InsuranceSubscription'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InsuranceSubscription'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceSubscription'
+          description: ''
+  /api/insurance/subscriptions/{id}/:
+    get:
+      operationId: api_insurance_subscriptions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceSubscription'
+          description: ''
+  /api/insurance/subscriptions/{id}/renew/:
+    patch:
+      operationId: api_insurance_subscriptions_renew_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/notifications/:
+    get:
+      operationId: api_notifications_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/notifications/{id}/read/:
+    patch:
+      operationId: api_notifications_read_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/notifications/read-all/:
+    post:
+      operationId: api_notifications_read_all_create
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/notifications/unread-count/:
+    get:
+      operationId: api_notifications_unread_count_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/repayments/:
+    get:
+      operationId: api_repayments_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+          description: ''
+    post:
+      operationId: api_repayments_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentCreate'
+          description: ''
+  /api/repayments/{credit_id}/history/:
+    get:
+      operationId: api_repayments_history_list
+      parameters:
+      - in: path
+        name: credit_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/repayments/{id}/receipt/:
+    get:
+      operationId: api_repayments_receipt_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/repayments/overdue/:
+    get:
+      operationId: api_repayments_overdue_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepaymentSchedule'
+          description: ''
+components:
+  schemas:
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        agent:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ConversationStatusEnum'
+        subject:
+          type: string
+          nullable: true
+          maxLength: 300
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        closed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          readOnly: true
+      required:
+      - agent
+      - client
+      - closed_at
+      - created_at
+      - id
+      - messages
+    ConversationAssign:
+      type: object
+      properties:
+        agent:
+          type: integer
+          nullable: true
+      required:
+      - agent
+    ConversationCreate:
+      type: object
+      properties:
+        subject:
+          type: string
+          nullable: true
+          maxLength: 300
+    ConversationStatusEnum:
+      enum:
+      - OUVERTE
+      - EN_ATTENTE
+      - FERMÉE
+      type: string
+      description: |-
+        * `OUVERTE` - Ouverte
+        * `EN_ATTENTE` - En attente
+        * `FERMÉE` - Fermée
+    CoverageTypeEnum:
+      enum:
+      - VIE
+      - DÉCÈS_INVALIDITÉ
+      - MULTIRISQUE
+      type: string
+      description: |-
+        * `VIE` - Assurance Vie
+        * `DÉCÈS_INVALIDITÉ` - Décès et Invalidité
+        * `MULTIRISQUE` - Multirisque
+    CreditDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        credit:
+          type: integer
+        document_type:
+          $ref: '#/components/schemas/DocumentTypeEnum'
+        file:
+          type: string
+          format: uri
+        uploaded_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - credit
+      - document_type
+      - file
+      - id
+      - uploaded_at
+    CreditRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        interest_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          readOnly: true
+        purpose:
+          type: string
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status2b8Enum'
+          readOnly: true
+        eligibility_score:
+          type: integer
+          readOnly: true
+          nullable: true
+        agent:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        rejection_reason:
+          type: string
+          readOnly: true
+          nullable: true
+        disbursement_date:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDocument'
+          readOnly: true
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepaymentSchedule'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - agent
+      - amount
+      - client
+      - created_at
+      - disbursement_date
+      - documents
+      - duration_months
+      - eligibility_score
+      - id
+      - interest_rate
+      - purpose
+      - rejection_reason
+      - schedules
+      - status
+      - updated_at
+    CreditStatusUpdate:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Status2b8Enum'
+        rejection_reason:
+          type: string
+          nullable: true
+        disbursement_date:
+          type: string
+          format: date
+          nullable: true
+        agent:
+          type: integer
+          nullable: true
+    CustomTokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - username
+    DocumentTypeEnum:
+      enum:
+      - CNI
+      - JUSTIFICATIF_REVENUS
+      - AUTRE
+      type: string
+      description: |-
+        * `CNI` - Carte Nationale d'Identité / Passeport
+        * `JUSTIFICATIF_REVENUS` - Justificatif de revenus / Relevé
+        * `AUTRE` - Autre pièce
+    InsuranceProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        coverage_type:
+          $ref: '#/components/schemas/CoverageTypeEnum'
+        monthly_premium:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        coverage_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        is_active:
+          type: boolean
+      required:
+      - coverage_amount
+      - coverage_type
+      - description
+      - id
+      - monthly_premium
+      - name
+    InsuranceSubscription:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        product:
+          type: integer
+        product_details:
+          allOf:
+          - $ref: '#/components/schemas/InsuranceProduct'
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/InsuranceSubscriptionStatusEnum'
+          readOnly: true
+        beneficiary_name:
+          type: string
+          maxLength: 200
+        beneficiary_phone:
+          type: string
+          maxLength: 20
+        policy_number:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - beneficiary_name
+      - beneficiary_phone
+      - client
+      - created_at
+      - end_date
+      - id
+      - policy_number
+      - product
+      - product_details
+      - status
+    InsuranceSubscriptionStatusEnum:
+      enum:
+      - ACTIVE
+      - EXPIRÉE
+      - ANNULÉE
+      - EN_ATTENTE
+      type: string
+      description: |-
+        * `ACTIVE` - Active
+        * `EXPIRÉE` - Expirée
+        * `ANNULÉE` - Annulée
+        * `EN_ATTENTE` - En attente
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        conversation:
+          type: integer
+          readOnly: true
+        sender:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        sender_id:
+          type: integer
+          readOnly: true
+        content:
+          type: string
+        is_read:
+          type: boolean
+          readOnly: true
+        sent_at:
+          type: string
+          format: date-time
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - content
+      - conversation
+      - id
+      - is_read
+      - read_at
+      - sender
+      - sender_id
+      - sent_at
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        recipient:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        notification_type:
+          allOf:
+          - $ref: '#/components/schemas/NotificationTypeEnum'
+          readOnly: true
+        related_object_id:
+          type: integer
+          readOnly: true
+          nullable: true
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - id
+      - message
+      - notification_type
+      - read_at
+      - recipient
+      - related_object_id
+      - title
+    NotificationTypeEnum:
+      enum:
+      - CREDIT_STATUS
+      - PAYMENT
+      - INSURANCE
+      - CHAT
+      - ALERT
+      type: string
+      description: |-
+        * `CREDIT_STATUS` - Changement de statut crédit
+        * `PAYMENT` - Remboursement enregistré
+        * `INSURANCE` - Assurance mobile
+        * `CHAT` - Chat support
+        * `ALERT` - Alerte générale
+    PatchedConversationAssign:
+      type: object
+      properties:
+        agent:
+          type: integer
+          nullable: true
+    PatchedCreditStatusUpdate:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Status2b8Enum'
+        rejection_reason:
+          type: string
+          nullable: true
+        disbursement_date:
+          type: string
+          format: date
+          nullable: true
+        agent:
+          type: integer
+          nullable: true
+    PatchedUserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Adresse électronique
+          maxLength: 254
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 20
+        region:
+          type: string
+          maxLength: 100
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        id_number:
+          type: string
+          maxLength: 50
+        is_verified:
+          type: boolean
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Date d’inscription
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        schedule:
+          type: integer
+        installment_number:
+          type: integer
+          readOnly: true
+        credit_id:
+          type: integer
+          readOnly: true
+        amount_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        transaction_reference:
+          type: string
+          nullable: true
+          maxLength: 100
+        recorded_by:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        late_penalty:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        notes:
+          type: string
+          nullable: true
+      required:
+      - amount_paid
+      - credit_id
+      - id
+      - installment_number
+      - payment_date
+      - payment_method
+      - recorded_by
+      - schedule
+    PaymentCreate:
+      type: object
+      properties:
+        schedule:
+          type: integer
+        amount_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        transaction_reference:
+          type: string
+          nullable: true
+          maxLength: 100
+        notes:
+          type: string
+          nullable: true
+      required:
+      - amount_paid
+      - payment_date
+      - payment_method
+      - schedule
+    PaymentMethodEnum:
+      enum:
+      - MOBILE_MONEY
+      - ESPÈCES
+      - VIREMENT
+      type: string
+      description: |-
+        * `MOBILE_MONEY` - Mobile Money (Orange/Wave/MTN)
+        * `ESPÈCES` - Espèces
+        * `VIREMENT` - Virement bancaire
+    RepaymentSchedule:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        installment_number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        due_date:
+          type: string
+          format: date
+        principal_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        interest_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/RepaymentScheduleStatusEnum'
+        payments:
+          type: string
+          readOnly: true
+        late_penalty:
+          type: string
+          readOnly: true
+      required:
+      - due_date
+      - id
+      - installment_number
+      - interest_amount
+      - late_penalty
+      - payments
+      - principal_amount
+      - total_amount
+    RepaymentScheduleStatusEnum:
+      enum:
+      - EN_ATTENTE
+      - PAYÉE
+      - EN_RETARD
+      type: string
+      description: |-
+        * `EN_ATTENTE` - En attente
+        * `PAYÉE` - Payée
+        * `EN_RETARD` - En retard
+    RoleEnum:
+      enum:
+      - CLIENT
+      - AGENT
+      - ADMIN
+      type: string
+      description: |-
+        * `CLIENT` - Client
+        * `AGENT` - Agent de terrain
+        * `ADMIN` - Administrateur
+    Status2b8Enum:
+      enum:
+      - SOUMISE
+      - EN_ANALYSE
+      - APPROUVÉE
+      - DÉCAISSÉE
+      - REJETÉE
+      type: string
+      description: |-
+        * `SOUMISE` - Soumise
+        * `EN_ANALYSE` - En analyse
+        * `APPROUVÉE` - Approuvée
+        * `DÉCAISSÉE` - Décaissée
+        * `REJETÉE` - Rejetée
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Adresse électronique
+          maxLength: 254
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 20
+        region:
+          type: string
+          maxLength: 100
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        id_number:
+          type: string
+          maxLength: 50
+        is_verified:
+          type: boolean
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Date d’inscription
+      required:
+      - date_joined
+      - id
+      - is_verified
+      - role
+      - username
+    UserRegistration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        phone:
+          type: string
+          maxLength: 20
+        region:
+          type: string
+          maxLength: 100
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        id_number:
+          type: string
+          maxLength: 50
+      required:
+      - email
+      - id
+      - password
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
