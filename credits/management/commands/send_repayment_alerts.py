@@ -19,18 +19,21 @@ class Command(BaseCommand):
         
         reminders_sent = 0
         for schedule in schedules_j3:
-            Notification.objects.create(
+            _, created = Notification.objects.get_or_create(
                 recipient=schedule.credit.client,
-                title="Rappel : Échéance de remboursement à venir",
-                message=(
-                    f"Bonjour {schedule.credit.client.first_name or schedule.credit.client.username}, "
-                    f"votre échéance #{schedule.installment_number} d'un montant de {schedule.total_amount} FCFA "
-                    f"arrive à échéance le {schedule.due_date}. Merci de régler via votre agent ou Mobile Money."
-                ),
                 notification_type='PAYMENT',
-                related_object_id=schedule.id
+                related_object_id=schedule.id,
+                title="Rappel : Échéance de remboursement à venir",
+                defaults={
+                    'message': (
+                        f"Bonjour {schedule.credit.client.first_name or schedule.credit.client.username}, "
+                        f"votre échéance #{schedule.installment_number} d'un montant de {schedule.total_amount} FCFA "
+                        f"arrive à échéance le {schedule.due_date}. Merci de régler via votre agent ou Mobile Money."
+                    )
+                }
             )
-            reminders_sent += 1
+            if created:
+                reminders_sent += 1
             
         self.stdout.write(self.style.SUCCESS(f"[OK] {reminders_sent} rappels de paiement (J-3) envoyes."))
 

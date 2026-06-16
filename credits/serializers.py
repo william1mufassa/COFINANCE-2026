@@ -73,13 +73,31 @@ class CreditStatusUpdateSerializer(serializers.ModelSerializer):
         model = CreditRequest
         fields = ('status', 'rejection_reason', 'disbursement_date', 'agent')
 
+    # Allowed status transitions: {old_status: [allowed_new_statuses]}
+    ALLOWED_TRANSITIONS = {
+        'SOUMISE':    ['EN_ANALYSE', 'REJETÉE'],
+        'EN_ANALYSE': ['APPROUVÉE', 'REJETÉE'],
+        'APPROUVÉE':  ['DÉCAISSÉE', 'REJETÉE'],
+        'DÉCAISSÉE':  [],
+        'REJETÉE':    [],
+    }
+
     def validate(self, attrs):
-        status = attrs.get('status')
+        new_status = attrs.get('status')
         rejection_reason = attrs.get('rejection_reason')
-        
-        if status == 'REJETÉE' and not rejection_reason:
+
+        if new_status == 'REJETÉE' and not rejection_reason:
             raise serializers.ValidationError({"rejection_reason": "Un motif est requis pour rejeter une demande."})
-        
+
+        if new_status and self.instance:
+            old_status = self.instance.status
+            allowed = self.ALLOWED_TRANSITIONS.get(old_status, [])
+            if new_status != old_status and new_status not in allowed:
+                raise serializers.ValidationError({
+                    "status": f"Transition '{old_status}' → '{new_status}' non autorisée. "
+                              f"Transitions valides depuis '{old_status}' : {allowed or ['aucune']}."
+                })
+
         return attrs
 
     def update(self, instance, validated_data):
@@ -87,12 +105,14 @@ class CreditStatusUpdateSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
         new_status = instance.status
         
-        # Auto generate schedules if approved/disbursed and not yet generated
-        if new_status in ['APPROUVÉE', 'DÉCAISSÉE'] and old_status not in ['APPROUVÉE', 'DÉCAISSÉE']:
+        # Generate (or regenerate) schedule on approval or disbursement.
+        # APPROUVÉE→DÉCAISSÉE must also regenerate so due dates use the actual disbursement_date.
+        if new_status in ['APPROUVÉE', 'DÉCAISSÉE']:
             if new_status == 'DÉCAISSÉE' and not instance.disbursement_date:
                 instance.disbursement_date = date.today()
                 instance.save()
-            generate_repayment_schedule(instance)
+            if old_status not in ['APPROUVÉE', 'DÉCAISSÉE'] or new_status == 'DÉCAISSÉE':
+                generate_repayment_schedule(instance)
             
             # Send internal notification to client
             from notifications.models import Notification

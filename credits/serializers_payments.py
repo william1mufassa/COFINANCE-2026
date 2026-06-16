@@ -4,6 +4,7 @@ from accounts.serializers import UserProfileSerializer
 from notifications.models import Notification
 from decimal import Decimal
 from datetime import date
+from django.db import transaction
 
 class PaymentSerializer(serializers.ModelSerializer):
     recorded_by = UserProfileSerializer(read_only=True)
@@ -24,6 +25,7 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
         fields = ('schedule', 'amount_paid', 'payment_date', 'payment_method', 'transaction_reference', 'notes')
 
     def validate_schedule(self, value):
+        # Pre-check only — definitive check happens inside the atomic block in create()
         if value.status == 'PAYÉE':
             raise serializers.ValidationError("Cette échéance a déjà été entièrement payée.")
         return value
@@ -44,38 +46,38 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context['request']
         recorded_by = request.user
-        schedule = validated_data['schedule']
+        schedule_obj = validated_data['schedule']
         amount_paid = validated_data['amount_paid']
         late_penalty = validated_data['late_penalty']
 
-        # Create the Payment record
-        payment = Payment.objects.create(
-            schedule=schedule,
-            amount_paid=amount_paid,
-            payment_date=validated_data['payment_date'],
-            payment_method=validated_data['payment_method'],
-            transaction_reference=validated_data.get('transaction_reference', ''),
-            recorded_by=recorded_by,
-            late_penalty=late_penalty,
-            notes=validated_data.get('notes', '')
-        )
+        with transaction.atomic():
+            # Re-acquire the schedule with a row-level lock to prevent concurrent double payments
+            schedule = RepaymentSchedule.objects.select_for_update().get(pk=schedule_obj.pk)
 
-        # Check total payments for this schedule
-        total_schedule_paid = sum(p.amount_paid for p in schedule.payments.all())
-        required_amount = schedule.total_amount + late_penalty
-        
-        if total_schedule_paid >= required_amount:
-            schedule.status = 'PAYÉE'
-        else:
-            # Still pending or partial payment
-            pass
-        schedule.save()
+            if schedule.status == 'PAYÉE':
+                raise serializers.ValidationError({"schedule": "Cette échéance a déjà été entièrement payée."})
 
-        # Check if all schedules for this credit are paid
-        credit = schedule.credit
-        all_paid = not credit.schedules.exclude(status='PAYÉE').exists()
-        
-        # Send Notification to client
+            payment = Payment.objects.create(
+                schedule=schedule,
+                amount_paid=amount_paid,
+                payment_date=validated_data['payment_date'],
+                payment_method=validated_data['payment_method'],
+                transaction_reference=validated_data.get('transaction_reference', ''),
+                recorded_by=recorded_by,
+                late_penalty=late_penalty,
+                notes=validated_data.get('notes', '')
+            )
+
+            total_schedule_paid = sum(p.amount_paid for p in schedule.payments.all())
+            required_amount = schedule.total_amount + late_penalty
+
+            if total_schedule_paid >= required_amount:
+                schedule.status = 'PAYÉE'
+            schedule.save()
+
+            credit = schedule.credit
+            all_paid = not credit.schedules.exclude(status='PAYÉE').exists()
+
         Notification.objects.create(
             recipient=credit.client,
             title="Remboursement enregistré",

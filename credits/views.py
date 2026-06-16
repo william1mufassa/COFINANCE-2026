@@ -2,11 +2,12 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from .models import CreditRequest, CreditDocument, RepaymentSchedule, Payment
 from .serializers import (
-    CreditRequestSerializer, 
-    CreditDocumentSerializer, 
-    RepaymentScheduleSerializer, 
+    CreditRequestSerializer,
+    CreditDocumentSerializer,
+    RepaymentScheduleSerializer,
     CreditStatusUpdateSerializer
 )
 from .serializers_payments import PaymentSerializer, PaymentCreateSerializer
@@ -123,13 +124,10 @@ class OverdueSchedulesListView(generics.ListAPIView):
     permission_classes = (IsAgentOrAdmin,)
 
     def get_queryset(self):
-        # Update overdue statuses on demand
-        schedules = RepaymentSchedule.objects.filter(
-            status='EN_ATTENTE',
-            due_date__lt=date.today()
+        today = date.today()
+        return RepaymentSchedule.objects.filter(
+            Q(status='EN_RETARD') | Q(status='EN_ATTENTE', due_date__lt=today)
         )
-        schedules.update(status='EN_RETARD')
-        return RepaymentSchedule.objects.filter(status='EN_RETARD')
 
 class PaymentReceiptView(generics.RetrieveAPIView):
     serializer_class = PaymentSerializer

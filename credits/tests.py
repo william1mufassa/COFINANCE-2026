@@ -131,14 +131,24 @@ class CreditsTestCase(APITestCase):
         response = self.client.patch(status_url, {'status': 'APPROUVÉE'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # Agent updates status to APPROUVÉE (should succeed and generate schedule)
+        # Agent passe en EN_ANALYSE (SOUMISE → EN_ANALYSE)
         self.client.force_authenticate(user=self.agent)
+        response = self.client.patch(status_url, {'status': 'EN_ANALYSE'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        credit.refresh_from_db()
+        self.assertEqual(credit.status, 'EN_ANALYSE')
+
+        # Agent approuve (EN_ANALYSE → APPROUVÉE, génère l'échéancier)
         response = self.client.patch(status_url, {'status': 'APPROUVÉE'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         credit.refresh_from_db()
         self.assertEqual(credit.status, 'APPROUVÉE')
         self.assertEqual(credit.schedules.count(), 3)
         self.assertTrue(credit.client.notifications.filter(title="Statut de crédit mis à jour").exists())
+
+        # Transition illégale doit être rejetée (APPROUVÉE → SOUMISE)
+        response = self.client.patch(status_url, {'status': 'SOUMISE'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_repayment_payment_and_overdue_api(self):
         # Create approved credit with schedules

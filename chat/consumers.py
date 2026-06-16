@@ -67,7 +67,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        data = json.loads(text_data)
+        try:
+            data = json.loads(text_data)
+        except json.JSONDecodeError:
+            return
         event_type = data.get('type', 'message')
 
         if event_type == 'message':
@@ -147,8 +150,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def check_conversation_participant(self):
         try:
             conv = Conversation.objects.get(id=self.conversation_id)
-            if self.user.role in ['AGENT', 'ADMIN'] or self.user.is_staff:
+            if self.user.is_staff or self.user.role == 'ADMIN':
                 return True
+            if self.user.role == 'AGENT':
+                # Allow only the assigned agent, or any agent if the conversation is unassigned
+                return conv.agent is None or conv.agent == self.user
             return conv.client == self.user
         except Conversation.DoesNotExist:
             return False

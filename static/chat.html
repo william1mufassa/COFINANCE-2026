@@ -874,18 +874,25 @@
             const container = document.getElementById('messagesContainer');
             const bubble = document.createElement('div');
             const isOutgoing = msg.sender_id === currentUser.id;
-            
+
             bubble.className = `message-bubble ${isOutgoing ? 'outgoing' : 'incoming'}`;
-            
-            const senderLabel = isOutgoing ? '' : `<div style="font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 4px;">${msg.sender_username} (${msg.sender_role})</div>`;
-            
-            const timeFormatted = new Date(msg.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            bubble.innerHTML = `
-                ${senderLabel}
-                <div>${msg.content}</div>
-                <div class="message-time">${timeFormatted}</div>
-            `;
+
+            if (!isOutgoing) {
+                const senderDiv = document.createElement('div');
+                senderDiv.style.cssText = 'font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 4px;';
+                senderDiv.textContent = `${msg.sender_username} (${msg.sender_role})`;
+                bubble.appendChild(senderDiv);
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.textContent = msg.content;
+            bubble.appendChild(contentDiv);
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date(msg.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            bubble.appendChild(timeDiv);
+
             container.appendChild(bubble);
         }
 

@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from django.utils import timezone
+from django.db import transaction
 from dateutil.relativedelta import relativedelta
 
 def calculate_eligibility_score(client, amount):
@@ -71,14 +72,11 @@ def generate_repayment_schedule(credit):
     Uses flat interest rate calculation.
     """
     from .models import RepaymentSchedule
-    
-    # Clean any existing schedules just in case
-    credit.schedules.all().delete()
-    
+
     duration = credit.duration_months
     amount = Decimal(str(credit.amount))
     monthly_rate = Decimal(str(credit.interest_rate)) / Decimal('100.00')
-    
+
     # Simple Flat Interest Rate model:
     # Principal paid per month = total amount / duration
     # Interest paid per month = total amount * monthly_rate
@@ -86,15 +84,13 @@ def generate_repayment_schedule(credit):
     principal_per_month = amount / Decimal(str(duration))
     interest_per_month = amount * monthly_rate
     total_per_month = principal_per_month + interest_per_month
-    
+
     # Starting date (default to today if disbursement_date not set)
     start_date = credit.disbursement_date or date.today()
-    
+
     schedules = []
     for i in range(1, duration + 1):
-        # Calculate due date: +i months from start_date
         due_date = start_date + relativedelta(months=i)
-        
         schedules.append(
             RepaymentSchedule(
                 credit=credit,
@@ -106,5 +102,7 @@ def generate_repayment_schedule(credit):
                 status='EN_ATTENTE'
             )
         )
-        
-    RepaymentSchedule.objects.bulk_create(schedules)
+
+    with transaction.atomic():
+        credit.schedules.all().delete()
+        RepaymentSchedule.objects.bulk_create(schedules)

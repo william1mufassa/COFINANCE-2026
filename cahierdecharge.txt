@@ -1,0 +1,161 @@
+
+  COFINANCE CI
+Société de Microfinance et d'Assurance Mobile
+
+CAHIER DES CHARGES
+Plateforme digitale de gestion de microcrédits, d'assurance mobile et de support client en temps réel
+
+Abidjan, juin 2026
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. PRÉSENTATION DE L'ENTREPRISE
+
+COFINANCE CI est une société ivoirienne de microfinance et d'assurance mobile fondée en 2019, dont le siège social est établi à Abidjan-Plateau. Agréée par la Banque Centrale des États de l'Afrique de l'Ouest (BCEAO), la société opère dans cinq régions de Côte d'Ivoire et compte aujourd'hui plus de 18 000 clients actifs, dont une majorité de micro-entrepreneurs, de femmes commerçantes et d'agriculteurs en zone péri-urbaine.
+
+Depuis sa création, COFINANCE CI s'est positionnée comme un acteur de l'inclusion financière en proposant des produits adaptés aux populations non bancarisées : microcrédits à remboursement hebdomadaire ou mensuel, assurances vie simplifiées et assurances décès-invalidité accessibles depuis un téléphone mobile. La société travaille en partenariat avec des opérateurs de Mobile Money (Orange Money, Wave, MTN MoMo) pour les décaissements et les remboursements.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2. PROBLÉMATIQUE ET BESOINS EXPRIMÉS
+
+Face à la croissance rapide de son portefeuille clients et à l'intensification de la concurrence dans le secteur de la microfinance numérique en Côte d'Ivoire, la Direction Générale de COFINANCE CI a identifié plusieurs dysfonctionnements critiques dans ses processus opérationnels actuels.
+
+2.1 Constats opérationnels
+
+- Traitement manuel des dossiers.
+  La gestion des demandes de microcrédit est aujourd'hui réalisée via des formulaires papier transmis aux agents de terrain, puis ressaisis manuellement dans des tableurs Excel. Ce processus engendre des délais de traitement de 5 à 10 jours ouvrés, des erreurs de saisie fréquentes et une impossibilité de suivre l'avancement d'un dossier en temps réel.
+
+- Manque de visibilité sur les clients.
+  L'absence d'un système d'information centralisé ne permet pas aux agents de terrain de consulter instantanément l'historique d'un client, son score de crédit interne ou le statut de ses remboursements précédents, ce qui multiplie les risques de sur-endettement.
+
+- Gestion fragmentée de l'assurance.
+  Les souscriptions aux produits d'assurance mobile sont gérées via des formulaires physiques distribués lors des visites terrain. Aucun dispositif n'informe automatiquement le client de l'expiration de sa couverture, générant un fort taux de non-renouvellement.
+
+- Absence de canal de support client structuré.
+  L'équipe de support reçoit en moyenne 150 sollicitations par semaine par téléphone, sans traçabilité. Les clients ne disposent d'aucun canal de communication direct avec un agent une fois leur demande soumise, ce qui génère frustration et appels répétés.
+
+- Pilotage limité de l'activité.
+  La Direction ne dispose pas de tableau de bord consolidé permettant de suivre en temps réel les indicateurs clés : taux de recouvrement, demandes en attente, souscriptions actives, conversations non traitées.
+
+2.2 Impacts mesurés
+
+Ces dysfonctionnements ont des conséquences directes et quantifiables sur la performance de la société :
+- Un délai moyen de traitement des dossiers de crédit supérieur à 7 jours contre 24 à 48 heures pour les concurrents digitaux
+- Un taux d'abandon des demandes estimé à 23 %
+- Un coût opérationnel de traitement par dossier de 4 200 FCFA en moyenne, jugé non viable à l'échelle
+
+Dans ce contexte, la Direction de COFINANCE CI a décidé de confier le développement d'une plateforme numérique intégrée à une équipe technique qualifiée, avec pour objectif de digitaliser l'ensemble de la chaîne de valeur de ses activités.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. OBJECTIFS DU PROJET
+
+La plateforme à développer doit répondre à trois objectifs stratégiques définis par la Direction Générale de COFINANCE CI :
+
+- Objectif 1 — Rapidité.
+  Réduire le délai de traitement des demandes de microcrédit de 7 jours à moins de 48 heures grâce à un workflow numérique complet.
+
+- Objectif 2 — Satisfaction.
+  Améliorer la satisfaction client en offrant un espace de suivi en ligne et un canal de communication directe avec les agents, mesurable par un NPS cible de 65 points.
+
+- Objectif 3 — Pilotage.
+  Fournir à la Direction un tableau de bord de pilotage en temps réel des indicateurs opérationnels, financiers et de support client.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. FONCTIONNALITÉS ATTENDUES DE LA PLATEFORME
+
+La plateforme sera développée sous forme d'API REST avec Django et Django REST Framework, accessible via une interface web. Elle sera structurée autour de six modules fonctionnels principaux auxquels s'ajoutera un module de support client en temps réel.
+
+Module 01 — Authentification & Profils
+Gestion des comptes utilisateurs avec trois niveaux de rôles : Client, Agent de terrain et Administrateur. Connexion sécurisée par tokens JWT, gestion des permissions par rôle, consultation et mise à jour du profil personnel.
+
+Module 02 — Gestion des microcrédits
+Dépôt en ligne de demandes de crédit avec pièces justificatives, workflow de traitement en quatre étapes (Soumise, En analyse, Approuvée, Décaissée), calcul automatique d'un score d'éligibilité simplifié, génération de l'échéancier de remboursement.
+
+Module 03 — Suivi des remboursements
+Enregistrement des paiements par les agents, consultation de l'historique par le client, calcul automatique des intérêts et pénalités de retard, alertes automatiques à J-3 et J+1 de chaque échéance.
+
+Module 04 — Produits d'assurance mobile
+Catalogue des formules d'assurance disponibles, souscription en ligne, gestion de la date de validité, notification automatique d'expiration 15 jours avant le terme, consultation des polices actives par le client.
+
+Module 05 — Tableau de bord administrateur
+Agrégation en temps réel des indicateurs clés : volume de demandes par statut, taux de recouvrement par période, nombre de souscriptions actives, conversations de support ouvertes. Filtres par date, par agent et par région.
+
+Module 06 — Notifications internes
+Système d'alertes in-app déclenchées par les changements d'état : changement de statut d'un crédit, remboursement enregistré, souscription confirmée. Marquage lu/non-lu et endpoint de consultation par l'utilisateur connecté.
+
+Module 07 — Chat en temps réel (support client)
+Canal de communication bidirectionnel entre un client et un agent (administrateur). Ouverture d'une conversation depuis l'espace client, assignation automatique ou manuelle à un agent disponible, persistance complète de l'historique des échanges, indicateur de présence en ligne de l'agent.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5. FOCUS — MODULE DE SUPPORT CLIENT EN TEMPS RÉEL
+
+Le module de chat constitue l'innovation majeure de cette plateforme au regard des pratiques actuelles de COFINANCE CI. Il répond directement à la problématique du support téléphonique non structuré identifiée en section 2.1 et représente un avantage concurrentiel fort vis-à-vis des autres acteurs de la microfinance en Côte d'Ivoire.
+
+5.1 Fonctionnement attendu
+
+- Initiation par le client.
+  Un client authentifié peut ouvrir une conversation de support depuis son espace personnel à tout moment, sans appel téléphonique.
+
+- Temps réel garanti.
+  La conversation est diffusée en temps réel via WebSocket : les messages apparaissent instantanément des deux côtés sans rechargement de page.
+
+- Interface agent.
+  Un agent (administrateur) reçoit une notification et peut rejoindre la conversation depuis son tableau de bord. Plusieurs conversations peuvent être traitées en parallèle.
+
+- Persistance de l'historique.
+  L'intégralité des échanges est sauvegardée en base de données. Le client peut consulter l'historique de ses conversations passées.
+
+- Indicateur de frappe (bonus).
+  Un indicateur visuel signale si l'agent est en train de rédiger sa réponse (« en train d'écrire... »).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+6. CONTRAINTES ET EXIGENCES TECHNIQUES
+
+- Stack obligatoire.
+  La plateforme sera développée avec Python 3.11+, Django 5.x et Django REST Framework. L'usage de tout autre framework backend est exclu.
+
+- Documentation API.
+  L'API sera documentée automatiquement via drf-spectacular (interface Swagger ou Redoc accessible sur /api/docs/). Toute route non documentée sera considérée incomplète.
+
+- Base de données.
+  La base de données de développement sera SQLite. Le projet devra ensuite être configuré pour basculer sur PostgreSQL.
+
+- Gestion de version.
+  Le code source sera versionné sur un dépôt Git (GitHub) avec un historique de commits représentatif de l'avancement.
+
+- Livraison.
+  Un fichier requirements.txt à jour et un README d'installation seront fournis avec le livrable final.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+7. LIVRABLES ATTENDUS
+
+1. Code source complet de la plateforme
+   Format : Dépôt Git public (GitHub) — OBLIGATOIRE
+
+2. API documentée avec Swagger ou Redoc
+   Format : Accessible sur /api/docs/ en local — OBLIGATOIRE
+
+3. Jeu de données de démonstration
+   Format : Fixtures Django ou commande seed_db — OBLIGATOIRE
+
+4. README et instructions d'installation
+   Format : Fichier Markdown dans le dépôt — OBLIGATOIRE
+
+5. Démonstration du chat en temps réel
+   Format : Deux onglets ouverts simultanément — OBLIGATOIRE
+
+6. Interface HTML du chat (page web)
+   Format : Page HTML/JS ou template Django — OBLIGATOIRE
+
+━
+
+Toutes les fonctionnalités devront impérativement être exposées sous forme d'API - aucune logique métier ne sera acceptée sans Endpoint documenté
+Un fichier requirements.txt à jour listant toutes les dépendances du projet
+Un README clair avec les instructions d'installation
+L'API Swagger ou Redoc fonctionnelle sur /api/docs/
