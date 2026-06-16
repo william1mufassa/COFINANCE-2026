@@ -1,16 +1,45 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
+from rest_framework import serializers as drf_serializers
 from django.db.models import Sum, Count, Q
 from accounts.permissions import IsAgentOrAdmin
 from credits.models import CreditRequest, RepaymentSchedule, Payment
 from insurance.models import InsuranceSubscription
 from django.apps import apps
 from datetime import datetime, date
+from decimal import Decimal
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+
+
+class DashboardSummaryResponseSerializer(drf_serializers.Serializer):
+    volume_by_status = drf_serializers.DictField(child=drf_serializers.IntegerField())
+    total_amount_disbursed = drf_serializers.FloatField()
+    recovery_rate = drf_serializers.FloatField()
+    active_subscriptions = drf_serializers.IntegerField()
+    open_conversations = drf_serializers.IntegerField()
+    active_clients = drf_serializers.IntegerField()
+    overdue_schedules_count = drf_serializers.IntegerField()
+    total_due_schedules = drf_serializers.FloatField()
+    total_paid_schedules = drf_serializers.FloatField()
+
 
 class DashboardSummaryView(APIView):
     permission_classes = (IsAgentOrAdmin,)
 
+    @extend_schema(
+        summary="Tableau de bord — Statistiques globales",
+        description="Retourne les KPIs agrégés : volume de crédits par statut, montant décaissé, taux de recouvrement, souscriptions actives, conversations ouvertes et clients actifs.",
+        parameters=[
+            OpenApiParameter('start_date', OpenApiTypes.DATE, description='Date de début du filtre (YYYY-MM-DD)'),
+            OpenApiParameter('end_date', OpenApiTypes.DATE, description='Date de fin du filtre (YYYY-MM-DD)'),
+            OpenApiParameter('agent_id', OpenApiTypes.INT, description="ID de l'agent pour filtrer"),
+            OpenApiParameter('region', OpenApiTypes.STR, description='Région pour filtrer'),
+        ],
+        responses={200: DashboardSummaryResponseSerializer},
+        tags=['Dashboard'],
+    )
     def get(self, request):
         # Retrieve filters from query parameters
         start_date_str = request.query_params.get('start_date')

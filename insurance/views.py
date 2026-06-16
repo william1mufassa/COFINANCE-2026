@@ -7,6 +7,7 @@ from .serializers import InsuranceProductSerializer, InsuranceSubscriptionSerial
 from accounts.permissions import IsClient, IsAdminUser, IsAgentOrAdmin
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from drf_spectacular.utils import extend_schema
 
 class InsuranceProductListCreateView(generics.ListCreateAPIView):
     queryset = InsuranceProduct.objects.filter(is_active=True)
@@ -52,9 +53,18 @@ class AdminInsuranceProductCreateView(generics.CreateAPIView):
     serializer_class = InsuranceProductSerializer
     permission_classes = (IsAdminUser,)
 
-class InsuranceSubscriptionRenewView(APIView):
+class InsuranceSubscriptionRenewView(generics.GenericAPIView):
+    queryset = InsuranceSubscription.objects.all()
+    serializer_class = InsuranceSubscriptionSerializer
     permission_classes = (IsClient,)
 
+    @extend_schema(
+        summary="Renouveler une souscription d'assurance",
+        description="Permet à un client de renouveler sa souscription d'assurance mobile existante. La nouvelle période commence à la date de fin actuelle ou aujourd'hui si elle est déjà passée.",
+        request=None,
+        responses={200: InsuranceSubscriptionSerializer},
+        tags=['Assurance Mobile'],
+    )
     def patch(self, request, pk):
         subscription = get_object_or_404(InsuranceSubscription, id=pk, client=request.user)
         

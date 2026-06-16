@@ -1,6 +1,8 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+from decouple import config, Csv
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,12 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+isgbxh%mtbvewfy$jnewa^8*!bq=2xb8-3soy0wmdtk5bv#=3'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-+isgbxh%mtbvewfy$jnewa^8*!bq=2xb8-3soy0wmdtk5bv#=3')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
 # Application definition
 
@@ -78,12 +80,18 @@ ASGI_APPLICATION = 'cofinance_ci.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASE_URL = config('DATABASE_URL', default='')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
@@ -161,9 +169,34 @@ SIMPLE_JWT = {
 # drf-spectacular settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'API COFINANCE CI',
-    'DESCRIPTION': 'Documentation de la plateforme de gestion de microcrédits et assurances mobiles COFINANCE CI.',
+    'DESCRIPTION': (
+        'Documentation complète de la plateforme de gestion de microcrédits et assurances mobiles COFINANCE CI.\n\n'
+        '## Authentification\n'
+        'Utilisez `/api/auth/login/` pour obtenir un token JWT, puis ajoutez `Authorization: Bearer <token>` dans vos requêtes.\n\n'
+        '## Comptes de démonstration\n'
+        '- **Admin** : `admin` / `Admin1234!`\n'
+        '- **Agent** : `agent1` / `Agent1234!`\n'
+        '- **Client** : `client1` / `Client1234!`'
+    ),
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'TAGS': [
+        {'name': 'Authentification', 'description': 'Inscription, connexion JWT, gestion de profil'},
+        {'name': 'Microcrédits', 'description': 'Demandes de crédit, documents, changement de statut'},
+        {'name': 'Remboursements', 'description': 'Paiements, échéanciers, retards et pénalités'},
+        {'name': 'Assurance Mobile', 'description': 'Produits d\'assurance, souscriptions, renouvellement'},
+        {'name': 'Dashboard', 'description': 'KPIs et statistiques globales pour agents et admins'},
+        {'name': 'Notifications', 'description': 'Notifications in-app en temps réel'},
+        {'name': 'Chat & Support', 'description': 'Conversations et messages de support client'},
+    ],
+    'ENUM_NAME_OVERRIDES': {
+        'CreditStatusEnum': 'credits.models.CreditRequest.STATUS_CHOICES',
+        'RepaymentStatusEnum': 'credits.models.RepaymentSchedule.STATUS_CHOICES',
+        'InsuranceSubscriptionStatusEnum': 'insurance.models.InsuranceSubscription.STATUS_CHOICES',
+        'ConversationStatusEnum': 'chat.models.Conversation.STATUS_CHOICES',
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
 }
 
 # CORS configuration

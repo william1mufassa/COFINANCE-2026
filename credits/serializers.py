@@ -9,7 +9,7 @@ class CreditDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditDocument
         fields = ('id', 'credit', 'document_type', 'file', 'uploaded_at')
-        read_only_fields = ('id', 'uploaded_at')
+        read_only_fields = ('id', 'credit', 'uploaded_at')
 
 class RepaymentScheduleSerializer(serializers.ModelSerializer):
     payments = serializers.SerializerMethodField()

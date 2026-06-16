@@ -12,6 +12,7 @@ from .serializers import (
 )
 from accounts.permissions import IsClient, IsAgentOrAdmin, IsAdminUser
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema
 
 User = get_user_model()
 
@@ -86,9 +87,18 @@ class ConversationMessageListView(generics.ListAPIView):
             conversation = get_object_or_404(Conversation, id=conversation_id, client=user)
         return conversation.messages.all()
 
-class ConversationCloseView(APIView):
+class ConversationCloseView(generics.GenericAPIView):
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    @extend_schema(
+        summary="Fermer une conversation de chat",
+        description="Ferme un ticket de conversation de chat ouvert. Un client peut fermer le sien, un agent/admin peut fermer n'importe lequel. Une notification est envoyée au client si l'agent ferme la conversation.",
+        request=None,
+        responses={200: ConversationSerializer},
+        tags=['Chat & Support'],
+    )
     def patch(self, request, pk):
         user = request.user
         if user.role in ['AGENT', 'ADMIN'] or user.is_staff:

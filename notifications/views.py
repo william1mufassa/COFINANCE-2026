@@ -1,10 +1,20 @@
 from rest_framework import generics, permissions, status
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .models import Notification
 from .serializers import NotificationSerializer
+from drf_spectacular.utils import extend_schema
+from rest_framework import serializers as drf_serializers
+
+
+class _MessageResponseSerializer(drf_serializers.Serializer):
+    message = drf_serializers.CharField()
+
+
+class _CountResponseSerializer(drf_serializers.Serializer):
+    count = drf_serializers.IntegerField()
+
 
 class NotificationListView(generics.ListAPIView):
     serializer_class = NotificationSerializer
@@ -19,9 +29,18 @@ class NotificationListView(generics.ListAPIView):
             queryset = queryset.filter(is_read=is_read)
         return queryset
 
-class NotificationMarkReadView(APIView):
+
+class NotificationMarkReadView(generics.GenericAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    @extend_schema(
+        summary="Marquer une notification comme lue",
+        description="Marque une notification spécifique comme lue pour l'utilisateur connecté.",
+        responses={200: NotificationSerializer},
+        tags=['Notifications'],
+    )
     def patch(self, request, pk):
         notification = get_object_or_404(Notification, id=pk, recipient=request.user)
         if not notification.is_read:
@@ -31,9 +50,18 @@ class NotificationMarkReadView(APIView):
         serializer = NotificationSerializer(notification)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class NotificationMarkAllReadView(APIView):
+
+class NotificationMarkAllReadView(generics.GenericAPIView):
+    serializer_class = _MessageResponseSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    @extend_schema(
+        summary="Marquer toutes les notifications comme lues",
+        description="Marque l'ensemble des notifications non lues de l'utilisateur connecté comme lues.",
+        request=None,
+        responses={200: _MessageResponseSerializer},
+        tags=['Notifications'],
+    )
     def post(self, request):
         Notification.objects.filter(recipient=request.user, is_read=False).update(
             is_read=True,
@@ -41,9 +69,17 @@ class NotificationMarkAllReadView(APIView):
         )
         return Response({"message": "Toutes les notifications ont été marquées comme lues."}, status=status.HTTP_200_OK)
 
-class NotificationUnreadCountView(APIView):
+
+class NotificationUnreadCountView(generics.GenericAPIView):
+    serializer_class = _CountResponseSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    @extend_schema(
+        summary="Nombre de notifications non lues",
+        description="Retourne le nombre de notifications non lues pour l'utilisateur connecté.",
+        responses={200: _CountResponseSerializer},
+        tags=['Notifications'],
+    )
     def get(self, request):
         count = Notification.objects.filter(recipient=request.user, is_read=False).count()
         return Response({"count": count}, status=status.HTTP_200_OK)
