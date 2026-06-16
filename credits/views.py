@@ -15,11 +15,19 @@ from django.utils import timezone
 from datetime import date
 from decimal import Decimal
 
+from rest_framework.pagination import PageNumberPagination
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 # --- Credit Request Views ---
 
 class CreditRequestListCreateView(generics.ListCreateAPIView):
     serializer_class = CreditRequestSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -51,6 +59,7 @@ class AdminCreditListView(generics.ListAPIView):
     queryset = CreditRequest.objects.all()
     serializer_class = CreditRequestSerializer
     permission_classes = (IsAgentOrAdmin,)
+    pagination_class = StandardResultsSetPagination
 
 class CreditDocumentUploadView(generics.CreateAPIView):
     serializer_class = CreditDocumentSerializer
@@ -78,6 +87,7 @@ class CreditScheduleView(generics.ListAPIView):
 
 class PaymentListCreateView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
         if self.request.method == 'POST':

@@ -9,9 +9,17 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from drf_spectacular.utils import extend_schema
 
+from rest_framework.pagination import PageNumberPagination
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class InsuranceProductListCreateView(generics.ListCreateAPIView):
-    queryset = InsuranceProduct.objects.filter(is_active=True)
+    queryset = InsuranceProduct.objects.filter(is_active=True).order_by('id')
     serializer_class = InsuranceProductSerializer
+    pagination_class = StandardResultsSetPagination
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -26,6 +34,7 @@ class InsuranceProductDetailView(generics.RetrieveAPIView):
 class InsuranceSubscriptionListCreateView(generics.ListCreateAPIView):
     serializer_class = InsuranceSubscriptionSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         user = self.request.user

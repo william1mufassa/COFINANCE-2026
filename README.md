@@ -110,3 +110,24 @@ Deux commandes Django personnalisées simulent des processus planifiés en arri�
    python manage.py check_insurance_expirations
    ```
    - Alerte les clients 15 jours avant la fin de leur police d'assurance pour les inciter au renouvellement.
+
+### ⚙️ Automatisation des Relances en Production
+
+Pour automatiser l'exécution quotidienne de ces relances (par exemple, chaque jour à minuit) :
+
+#### Sur Linux (Cron)
+Ajoutez ces lignes à votre crontab (`crontab -e`) :
+```text
+0 0 * * * cd /chemin/vers/votre/projet && /chemin/vers/venv/bin/python manage.py send_repayment_alerts >> /chemin/vers/votre/projet/logs/cron_alerts.log 2>&1
+5 0 * * * cd /chemin/vers/votre/projet && /chemin/vers/venv/bin/python manage.py check_insurance_expirations >> /chemin/vers/votre/projet/logs/cron_insurance.log 2>&1
+```
+
+#### Sur Windows (Planificateur de tâches)
+1. Créez un fichier script batch (ex: `run_alerts.bat`) :
+   ```batch
+   cd "C:\Users\Abdallah\Desktop\COFINANCE 2026"
+   call .\venv\Scripts\activate.bat
+   python manage.py send_repayment_alerts
+   python manage.py check_insurance_expirations
+   ```
+2. Configurez une tâche planifiée dans Windows pour exécuter ce fichier `.bat` quotidiennement à minuit.

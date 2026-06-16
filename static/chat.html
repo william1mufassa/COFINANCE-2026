@@ -588,6 +588,8 @@
         let ws = null;
         let typingTimeout = null;
         let isTyping = false;
+        let reconnectAttempts = 0;
+        let reconnectInterval = 1000;
 
         // Start App
         if (token) {
@@ -813,11 +815,24 @@
 
         function setupWebSocket(convId) {
             if (ws) {
+                // Remove listeners to avoid multiple trigger during reconnection
+                ws.onopen = null;
+                ws.onmessage = null;
+                ws.onclose = null;
                 ws.close();
             }
 
             const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-            ws = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/${convId}/?token=${token}`);
+            const wsUrl = `${wsScheme}://${window.location.host}/ws/chat/${convId}/`;
+            
+            // Pass token securely via Subprotocol headers
+            ws = new WebSocket(wsUrl, ["token", token]);
+
+            ws.onopen = function() {
+                console.log('WebSocket connected.');
+                reconnectAttempts = 0;
+                reconnectInterval = 1000;
+            };
 
             ws.onmessage = function(e) {
                 const data = JSON.parse(e.data);
@@ -842,6 +857,16 @@
 
             ws.onclose = function(e) {
                 console.log('WebSocket closed.');
+                // Reconnect if the conversation is still active and we haven't reached max attempts
+                const maxReconnectAttempts = 5;
+                if (activeConvId === convId && reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    reconnectInterval = Math.min(10000, reconnectInterval * 2);
+                    console.log(`Reconnecting in ${reconnectInterval}ms (Attempt ${reconnectAttempts}/${maxReconnectAttempts})...`);
+                    setTimeout(() => {
+                        setupWebSocket(convId);
+                    }, reconnectInterval);
+                }
             };
         }
 

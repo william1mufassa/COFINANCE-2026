@@ -14,13 +14,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.conversation_id = self.scope['url_route']['kwargs']['conversation_id']
         self.room_group_name = f'chat_{self.conversation_id}'
 
-        # Get token from query string
-        query_string = self.scope['query_string'].decode()
+        # Get token from subprotocol first (Sec-WebSocket-Protocol)
         token_key = None
-        for param in query_string.split('&'):
-            if param.startswith('token='):
-                token_key = param.split('=')[1]
-                break
+        subprotocols = self.scope.get('subprotocols', [])
+        self.use_subprotocol = False
+        
+        if len(subprotocols) == 2 and subprotocols[0] == 'token':
+            token_key = subprotocols[1]
+            self.use_subprotocol = True
+        else:
+            # Fallback to query string
+            query_string = self.scope['query_string'].decode()
+            for param in query_string.split('&'):
+                if param.startswith('token='):
+                    token_key = param.split('=')[1]
+                    break
 
         if token_key:
             self.user = await self.get_user_from_token(token_key)
@@ -43,7 +51,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        await self.accept()
+        
+        # Echo back 'token' subprotocol if used
+        if self.use_subprotocol:
+            await self.accept(subprotocol='token')
+        else:
+            await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
