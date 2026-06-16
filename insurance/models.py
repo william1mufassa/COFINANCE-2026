@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from datetime import date
-import random
 
 class InsuranceProduct(models.Model):
     COVERAGE_TYPES = [

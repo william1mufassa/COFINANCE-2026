@@ -1,10 +1,9 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from .models import InsuranceProduct, InsuranceSubscription
 from .serializers import InsuranceProductSerializer, InsuranceSubscriptionSerializer
-from accounts.permissions import IsClient, IsAdminUser, IsAgentOrAdmin
+from accounts.permissions import IsClient, IsAdminUser
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from drf_spectacular.utils import extend_schema

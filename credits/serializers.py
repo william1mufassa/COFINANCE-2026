@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CreditRequest, CreditDocument, RepaymentSchedule, Payment
+from .models import CreditRequest, CreditDocument, RepaymentSchedule
 from .utils import calculate_eligibility_score, generate_repayment_schedule
 from accounts.serializers import UserProfileSerializer
 from decimal import Decimal

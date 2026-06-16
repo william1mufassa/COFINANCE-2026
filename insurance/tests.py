@@ -1,5 +1,6 @@
 from decimal import Decimal
 from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APITestCase
@@ -55,7 +56,7 @@ class InsuranceTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['status'], 'ACTIVE')
         self.assertIn('COFCI-ASSUR', response.data['policy_number'])
-        self.assertEqual(response.data['end_date'], str(date.today() + timedelta(days=365))) # 12 months (standard date delta)
+        self.assertEqual(response.data['end_date'], str(date.today() + relativedelta(months=12)))
         
         # Verify notification
         self.assertTrue(self.client_user.notifications.filter(title="Souscription d'assurance confirmée").exists())
@@ -80,5 +81,5 @@ class InsuranceTestCase(APITestCase):
         sub.refresh_from_db()
         self.assertEqual(sub.status, 'ACTIVE')
         # Check that end date is updated to +12 months from today
-        expected_end_date = date.today() + timedelta(days=365) # Approx 12 months
-        self.assertGreaterEqual(sub.end_date, date.today())
+        expected_end_date = date.today() + relativedelta(months=12)
+        self.assertEqual(sub.end_date, expected_end_date)

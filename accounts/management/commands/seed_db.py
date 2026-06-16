@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from django.utils import timezone
-from credits.models import CreditRequest, RepaymentSchedule, Payment
+from credits.models import CreditRequest, Payment
 from credits.utils import generate_repayment_schedule
 from insurance.models import InsuranceProduct, InsuranceSubscription
 from chat.models import Conversation, Message
@@ -26,7 +25,7 @@ class Command(BaseCommand):
 
         # 2. Create Users
         self.stdout.write("Creating accounts...")
-        admin = User.objects.create_superuser(
+        User.objects.create_superuser(
             username='admin',
             email='admin@cofinci.ci',
             password='Admin1234!',
@@ -68,7 +67,7 @@ class Command(BaseCommand):
             duration_months=12
         )
 
-        prod_deces = InsuranceProduct.objects.create(
+        InsuranceProduct.objects.create(
             name='Sécurité Décès-Invalidité',
             description='Une couverture complète et sur-mesure pour faire face aux imprévus de la vie.',
             coverage_type='DÉCÈS_INVALIDITÉ',

@@ -258,17 +258,17 @@
             text-transform: uppercase;
         }
 
-        .status-ouvert {
+        .status-ouverte {
             background: rgba(16, 185, 129, 0.15);
             color: var(--success);
         }
 
-        .status-attente {
+        .status-en_attente {
             background: rgba(245, 158, 11, 0.15);
             color: #f59e0b;
         }
 
-        .status-ferme {
+        .status-fermée {
             background: rgba(156, 163, 175, 0.15);
             color: var(--text-muted);
         }
@@ -561,7 +561,7 @@
 
                     <div class="chat-input-area">
                         <div class="input-row">
-                            <input type="text" class="chat-input" id="messageInput" placeholder="Saisissez votre message..." onkeydown="handleInputKeydown()">
+                            <input type="text" class="chat-input" id="messageInput" placeholder="Saisissez votre message..." onkeydown="handleInputKeydown(event)">
                             <button class="send-btn" onclick="sendMessage()">Envoyer</button>
                         </div>
                         <div class="typing-indicator" id="typingIndicator" style="display: none;">
@@ -913,7 +913,7 @@
             input.value = '';
         }
 
-        function handleInputKeydown() {
+        function handleInputKeydown(event) {
             if (event.key === 'Enter') {
                 sendMessage();
             } else {

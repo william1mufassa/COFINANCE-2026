@@ -1,13 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions
 from rest_framework import serializers as drf_serializers
 from django.db.models import Sum, Count, Q
 from accounts.permissions import IsAgentOrAdmin
 from credits.models import CreditRequest, RepaymentSchedule, Payment
 from insurance.models import InsuranceSubscription
 from django.apps import apps
-from datetime import datetime, date
+from datetime import datetime
 from decimal import Decimal
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes

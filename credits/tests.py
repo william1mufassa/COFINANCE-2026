@@ -1,11 +1,11 @@
 from decimal import Decimal
-from datetime import date, timedelta
+from datetime import date
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase
 from rest_framework import status
-from credits.models import CreditRequest, CreditDocument, RepaymentSchedule, Payment
+from credits.models import CreditRequest, CreditDocument
 from credits.utils import calculate_eligibility_score, generate_repayment_schedule
 
 User = get_user_model()

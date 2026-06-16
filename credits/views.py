@@ -1,9 +1,7 @@
-from rest_framework import generics, permissions, status
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import generics, permissions
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-from .models import CreditRequest, CreditDocument, RepaymentSchedule, Payment
+from .models import CreditRequest, RepaymentSchedule, Payment
 from .serializers import (
     CreditRequestSerializer,
     CreditDocumentSerializer,
@@ -11,10 +9,8 @@ from .serializers import (
     CreditStatusUpdateSerializer
 )
 from .serializers_payments import PaymentSerializer, PaymentCreateSerializer
-from accounts.permissions import IsClient, IsAgent, IsAdminUser, IsAgentOrAdmin
-from django.utils import timezone
+from accounts.permissions import IsClient, IsAgentOrAdmin
 from datetime import date
-from decimal import Decimal
 
 from rest_framework.pagination import PageNumberPagination
 

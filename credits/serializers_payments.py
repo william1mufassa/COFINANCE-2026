@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Payment, RepaymentSchedule, CreditRequest
+from .models import Payment, RepaymentSchedule
 from accounts.serializers import UserProfileSerializer
 from notifications.models import Notification
 from decimal import Decimal
@@ -32,8 +32,7 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         schedule = attrs.get('schedule')
-        amount_paid = attrs.get('amount_paid')
-        
+
         # Calculate late penalty
         late_penalty = Decimal('0.00')
         if date.today() > schedule.due_date:

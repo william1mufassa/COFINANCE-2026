@@ -56,7 +56,7 @@ class ChatTestCase(APITestCase):
             status='OUVERTE',
             subject='Dépôt non visible'
         )
-        msg = Message.objects.create(
+        Message.objects.create(
             conversation=conv,
             sender=self.client_user,
             content='Bonjour, mon dépôt Orange Money de ce matin n\'est pas encore visible.'
